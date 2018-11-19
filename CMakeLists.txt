@@ -6,7 +6,10 @@ set(MYNTEYE_INCLUDE_DIR /usr/local/include)
 set(MYNTEYE_LIB_DIR /usr/local/lib)
 set(MYNTEYE_LIB /usr/local/lib/libmynteye.so)
 
+aux_source_directory(./ DIRSRCS)
+
 find_package(OpenCV REQUIRED)
+
 #include_directories(${OpenCV_INCLUDE_DIRS})
 
 #find_package(mynteye REQUIRED)
@@ -14,7 +17,7 @@ include_directories(${MYNTEYE_INCLUDE_DIR})
 link_directories(${MYNTEYE_LIB_DIR})
 #link_libraries()
 
-add_executable(bi_cam main.cpp)
+add_executable(bi_cam ${DIRSRCS})
 
 #link_directories(${opencv_library_dirs})
 #link_directories(${mynteye_library_dirs})

@@ -3,10 +3,12 @@
 #include "opencv2/core.hpp"
 #include "opencv2/imgproc.hpp"
 #include "mynteye/api/api.h"
+#include "bi_cam.h"
 using namespace std;
 MYNTEYE_USE_NAMESPACE
 int main() {
 
+    /*
     auto &&api = API::Create();
     if (!api)
         return 1;
@@ -34,6 +36,19 @@ int main() {
         }
 
     }
+    */
+    bi_cam bi;
+    int w=9, h=6;
+    float  s=33.0;
+    string filename = "stereo_calib.xml";
+    string save_path = "./imglist/";
+    bool res = bi.collect_images(save_path);
+    if(res)
+        cout<<"success"<<endl;
+    else
+        cout<<"failed"<<endl;
+    //bi.calib_bino(w,h,s,filename);
+    //bi.calib_bino(w,h, s, filename);
 
     cv::waitKey();
     return 0;

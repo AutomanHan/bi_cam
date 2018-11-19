@@ -1,5 +1,7 @@
 #include "bi_cam.h"
 using namespace std;
+using namespace cv;
+MYNTEYE_USE_NAMESPACE
 void bi_cam::calib_single(string imglist) {
 
 }
@@ -17,7 +19,7 @@ bool bi_cam::readStringList(const string &filename, vector <string> &l) {
         l.push_back((string)*it);
     return true;
 }
-void bi_cam::calib_binocular(const vector<string>& imagelist, Size boardSize, float squareSize, bool displayCorners = false, bool useCalibrated=true, bool showRectified=true) {
+void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float squareSize, bool displayCorners , bool useCalibrated, bool showRectified) {
     if( imagelist.size() % 2 != 0 )
     {
         cout << "Error: the image list contains odd (non-even) number of elements\n";
@@ -286,6 +288,75 @@ void bi_cam::calib_binocular(const vector<string>& imagelist, Size boardSize, fl
     }
 }
 
+int bi_cam::calib_bino(int w, int h, float s, string filename) {
+    Size boardSize;
+    boardSize.width = w;
+    boardSize.height= h;
+    bool showRectified = false;
+    float squareSize = s;
+    vector<string> imagelist;
+
+    bool ok = readStringList(filename, imagelist);
+    if(!ok || imagelist.empty()){
+        cout<<"can not open "<< filename<<"or the string list is empty"<<endl;
+        return 0;
+    }
+    StereoCalib(imagelist, boardSize, squareSize, false, true, showRectified);
+    return 1;
+}
+bool bi_cam::collect_images(string save_path) {
+    int res = access(save_path.c_str(), F_OK);
+    if(res){
+        cout<<save_path.c_str()<<" is not exist"<<endl;
+        int res = mkdir(save_path.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+        if(res == 0)
+            return false;
+    }
+    auto &&api = API::Create();
+    if (!api)
+        return false;
+    //api->EnableStreamData(Stream::LEFT_RECTIFIED);
+    //api->EnableStreamData(Stream::RIGHT_RECTIFIED);
+    api->Start(Source::VIDEO_STREAMING);
+
+    //qqcv::namedWindow("Frame");
+    std::cout << "Hello, World!" << std::endl;
+    char key;
+    int i = 0;
+    while(true){
+        api->WaitForStreams();
+
+        auto &&left_data=api->GetStreamData(Stream::LEFT);
+        auto &&right_data=api->GetStreamData(Stream::RIGHT);
+
+        key = static_cast<char>(cv::waitKey(1));
+        if(!left_data.frame.empty() && !right_data.frame.empty()){
+            cv::Mat img;
+            cv::hconcat(left_data.frame, right_data.frame, img);
+            cv::imshow("frame",img);
+
+            if(key=='s'|| key=='S'){
+                i++;
+                char num[10];
+                sprintf(num, "%02d", i);
+                string left = save_path+"left"+num+".jpg";
+                string right = save_path+"right"+num+".jpg";
+                imwrite(left, left_data.frame);
+                imwrite(right, right_data.frame);
+            }
+
+        }
+
+
+        if (key == 27 || key == 'q' || key == 'Q') {  // ESC/Q
+            break;
+        }
+
+    }
+
+    return true;
+
+}
 void bi_cam::get_disparity() {
 
 }
