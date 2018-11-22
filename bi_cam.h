@@ -4,6 +4,8 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <vector>
 #include <string>
@@ -21,9 +23,17 @@
 #include <unistd.h>
 
 #include "mynteye/api/api.h"
+#include "mynteye/logger.h"
+#include "cv_painter.h"
 
 using namespace std;
 using namespace cv;
+struct cam_paras{
+    Mat cameraMatrix[2];
+    Mat distCoeffs[2];
+    Mat R[2];
+    Mat P[2];
+};
 class bi_cam{
 public:
     static bool readStringList(const string& filename, vector<string>& l);
@@ -40,16 +50,25 @@ public:
     int calib_bino(int w, int h, float s, string filename);
 
     //get disparity
-    void get_disparity();
+    void get_disparity(const Mat &left, const Mat &right, Mat &imgDisparity16S, Mat &imgDisparity8U);
 
     //handling disparity
     void handling_diparity();
 
     //get depth
-    void get_depth();
+    void get_depth(const Mat& dispMap, Mat &depthMap, Mat k);
 
     //get cloud point
     void get_point();
+
+    //modify params of camera
+    void manual_exposure(int gain, int brightness, int contrast);
+
+    // read yml file
+    void get_ymlfile(string intrinsics_file, string extrinsics_file, cam_paras &paras);
+
+    //UndistortRectify image
+    void undistortrectiry(const Mat& left_src,const Mat& right_src, const cam_paras& paras, Mat &left_rec, Mat &right_rec);
 };
 
 #endif

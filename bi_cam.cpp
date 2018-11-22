@@ -117,6 +117,7 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
 
     for( i = 0; i < nimages; i++ )
     {
+        //vector<cv::Point3d> obj;
         for( j = 0; j < boardSize.height; j++ )
             for( k = 0; k < boardSize.width; k++ )
                 objectPoints[i].push_back(Point3f(k*squareSize, j*squareSize, 0));
@@ -129,17 +130,30 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
     cameraMatrix[1] = initCameraMatrix2D(objectPoints,imagePoints[1],imageSize,0);
     Mat R, T, E, F;
 
-    double rms = stereoCalibrate(objectPoints, imagePoints[0], imagePoints[1],
+    /*
+    Mat cameraMatrix[2],R;
+    Vec3d T;
+    Vec4d distCoeffs[2];
+    */
+    int flag = 0;
+    flag |= cv::fisheye::CALIB_RECOMPUTE_EXTRINSIC;
+    flag |= cv::fisheye::CALIB_CHECK_COND;
+    flag |= cv::fisheye::CALIB_FIX_SKEW;
+    flag |= cv::fisheye::CALIB_FIX_K2;
+    flag |= cv::fisheye::CALIB_FIX_K3;
+    flag |= cv::fisheye::CALIB_FIX_K4;
+    double rms = fisheye::stereoCalibrate(objectPoints, imagePoints[0], imagePoints[1],
                                  cameraMatrix[0], distCoeffs[0],
                                  cameraMatrix[1], distCoeffs[1],
-                                 imageSize, R, T, E, F,
-                                 CALIB_FIX_ASPECT_RATIO +
-                                 CALIB_ZERO_TANGENT_DIST +
-                                 CALIB_USE_INTRINSIC_GUESS +
-                                 CALIB_SAME_FOCAL_LENGTH +
-                                 CALIB_RATIONAL_MODEL +
-                                 CALIB_FIX_K3 + CALIB_FIX_K4 + CALIB_FIX_K5,
-                                 TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 1e-5) );
+                                 imageSize, R, T,
+                                 flag,
+                                 //TermCriteria(TermCriteria::COUNT+TermCriteria::EPS, 100, 1e-5) );
+                                 cv::TermCriteria(3, 12, 4));
+
+    //fisheye::calibrate(objectPoints, imagePoints[0], imageSize, cameraMatrix[0],distCoeffs[0],
+    //                    R, T, flag, cv::TermCriteria(3, 20, 1e-6));
+
+
     cout << "done with RMS error=" << rms << endl;
 
 // CALIBRATION QUALITY CHECK
@@ -147,6 +161,7 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
 // includes all the output information,
 // we can check the quality of calibration using the
 // epipolar geometry constraint: m2^t*F*m1=0
+/*
     double err = 0;
     int npoints = 0;
     vector<Vec3f> lines[2];
@@ -171,7 +186,7 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
         npoints += npt;
     }
     cout << "average epipolar err = " <<  err/npoints << endl;
-
+*/
     // save intrinsic parameters
     FileStorage fs("intrinsics.yml", FileStorage::WRITE);
     if( fs.isOpened() )
@@ -186,10 +201,10 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
     Mat R1, R2, P1, P2, Q;
     Rect validRoi[2];
 
-    stereoRectify(cameraMatrix[0], distCoeffs[0],
+    fisheye::stereoRectify(cameraMatrix[0], distCoeffs[0],
                   cameraMatrix[1], distCoeffs[1],
                   imageSize, R, T, R1, R2, P1, P2, Q,
-                  CALIB_ZERO_DISPARITY, 1, imageSize, &validRoi[0], &validRoi[1]);
+                  CALIB_ZERO_DISPARITY, imageSize, 0.0, 1.0);
 
     fs.open("extrinsics.yml", FileStorage::WRITE);
     if( fs.isOpened() )
@@ -210,6 +225,8 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
 
     Mat rmap[2][2];
 // IF BY CALIBRATED (BOUGUET'S METHOD)
+
+
     if( useCalibrated )
     {
         // we already computed everything
@@ -230,15 +247,15 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
         Mat H1, H2;
         stereoRectifyUncalibrated(Mat(allimgpt[0]), Mat(allimgpt[1]), F, imageSize, H1, H2, 3);
 
-        R1 = cameraMatrix[0].inv()*H1*cameraMatrix[0];
+        R1 = cameraMatrix[0].inv()*H1 * cameraMatrix[0];
         R2 = cameraMatrix[1].inv()*H2*cameraMatrix[1];
         P1 = cameraMatrix[0];
         P2 = cameraMatrix[1];
     }
 
     //Precompute maps for cv::remap()
-    initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1, P1, imageSize, CV_16SC2, rmap[0][0], rmap[0][1]);
-    initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2, P2, imageSize, CV_16SC2, rmap[1][0], rmap[1][1]);
+    fisheye::initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1, P1, imageSize, CV_16SC2, rmap[0][0], rmap[0][1]);
+    fisheye::initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2, P2, imageSize, CV_16SC2, rmap[1][0], rmap[1][1]);
 
     Mat canvas;
     double sf;
@@ -276,10 +293,10 @@ void bi_cam::StereoCalib(const vector<string>& imagelist, Size boardSize, float 
         }
 
         if( !isVerticalStereo )
-            for( j = 0; j < canvas.rows; j += 16 )
+            for( j = 0; j < canvas.rows; j += 32 )
                 line(canvas, Point(0, j), Point(canvas.cols, j), Scalar(0, 255, 0), 1, 8);
         else
-            for( j = 0; j < canvas.cols; j += 16 )
+            for( j = 0; j < canvas.cols; j += 32 )
                 line(canvas, Point(j, 0), Point(j, canvas.rows), Scalar(0, 255, 0), 1, 8);
         imshow("rectified", canvas);
         char c = (char)waitKey();
@@ -292,7 +309,7 @@ int bi_cam::calib_bino(int w, int h, float s, string filename) {
     Size boardSize;
     boardSize.width = w;
     boardSize.height= h;
-    bool showRectified = false;
+    bool showRectified = true;
     float squareSize = s;
     vector<string> imagelist;
 
@@ -309,7 +326,7 @@ bool bi_cam::collect_images(string save_path) {
     if(res){
         cout<<save_path.c_str()<<" is not exist"<<endl;
         int res = mkdir(save_path.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
-        if(res == 0)
+        if(res != 0)
             return false;
     }
     auto &&api = API::Create();
@@ -346,29 +363,225 @@ bool bi_cam::collect_images(string save_path) {
             }
 
         }
+        if (key == 27 || key == 'q' || key == 'Q') {  // ESC/Q
+            break;
+        }
+    }
+    return true;
+}
+//獲取雙目視差圖
+/*
+ * params:
+ *
+ * left: left image
+ * right: right image
+ * imgDistparity16S: result of sgbm->computer, type: CV_16S
+ * imgDistparity8U : visualized disparity image  type: CV_8UC1
+ *
+ * */
+void bi_cam::get_disparity(const Mat &left, const Mat &right, Mat &imgDisparity16S, Mat &imgDisparity8U) {
+    //1.Call the constructor for StereoBM
+    int cha_left = left.channels();
+    int cha_right = right.channels();
+    Mat left_gray, right_gray;
+    if(cha_left != 1)
+        cvtColor(left, left_gray, CV_BGR2GRAY);
+    else
+        left_gray=left;
+    if(cha_right !=1 )
+        cvtColor(right, right_gray, CV_BGR2GRAY);
+    else
+        right_gray=right;
+
+    int numberOfDisparities = ((left_gray.cols / 8) + 15) & -16;
+    int SADWindowSize = 9;
+
+    Ptr<StereoSGBM> sgbm = StereoSGBM::create(0, 16,3);
+
+    sgbm->setPreFilterCap(63);
+    //int SADWindowSize = 9;
+    //int numberOfDisparities=64;
+    int sgbmWinSize = SADWindowSize > 0 ? SADWindowSize : 3;
+    sgbm->setBlockSize(sgbmWinSize);
+    int cn = left.channels();
+    sgbm->setP1(8 * cn*sgbmWinSize*sgbmWinSize);
+    sgbm->setP2(32 * cn*sgbmWinSize*sgbmWinSize);
+    sgbm->setMinDisparity(0);
+    sgbm->setNumDisparities(numberOfDisparities);
+    sgbm->setUniquenessRatio(10);
+    sgbm->setSpeckleWindowSize(100);
+    sgbm->setSpeckleRange(32);
+    sgbm->setDisp12MaxDiff(1);
+
+    sgbm->setMode(StereoSGBM::MODE_SGBM);
+    sgbm->compute(left_gray, right_gray, imgDisparity16S);
+
+    double minVal, maxVal;
+    minMaxLoc(imgDisparity16S, &minVal, &maxVal);
+    imgDisparity16S.convertTo(imgDisparity8U, CV_8UC1, 255/(maxVal-minVal));
+    //cout<<maxVal<<"\t"<<minVal<<endl;
+}
+
+void bi_cam::handling_diparity() {
+
+}
+/*
+函数作用：视差图转深度图
+输入：
+　　dispMap ----视差图，8位单通道，CV_8UC1
+　　K       ----内参矩阵，float类型
+输出：
+　　depthMap ----深度图，16位无符号单通道，CV_16UC1
+*/
+void bi_cam::get_depth(const Mat &dispMap, Mat &depthMap, Mat k) {
+    int type = dispMap.type();
+
+    float fx = k.at<float>(0,0);
+    float fy = k.at<float>(1,1);
+    float dx = k.at<float>(0,2);
+    float dy = k.at<float>(1,2);
+    float baseline = 1;
+
+    if(type == CV_8U){
+        int height = dispMap.rows;
+        int width = dispMap.cols;
+
+        unsigned char* dispData = (uchar*)dispMap.data;
+        unsigned short* depthData = (ushort*)depthMap.data;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int id = i * width + j;
+                if (!dispData[id]) continue;  //防止0除
+                depthData[id] = ushort((float) fx * baseline / ((float) dispData[id]));
+            }
+        }
+    }
+    else{
+        cout<<"please confirm dispImg's type!"<<endl;
+    }
+}
+
+void bi_cam::get_point() {
+
+}
 
 
+//modify params of camera
+void bi_cam::manual_exposure(int gain, int brightness, int contrast){
+    auto &&api = API::Create();
+
+    api->SetOptionValue(Option::GAIN, gain);
+    api->SetOptionValue(Option::BRIGHTNESS, brightness);
+    api->SetOptionValue(Option::CONTRAST, contrast);
+
+    LOG(INFO) << "Enable manual-exposure";
+    LOG(INFO) << "Set GAIN to " << api->GetOptionValue(Option::GAIN);
+    LOG(INFO) << "Set BRIGHTNESS to " << api->GetOptionValue(Option::BRIGHTNESS);
+    LOG(INFO) << "Set CONTRAST to " << api->GetOptionValue(Option::CONTRAST);
+
+    api->EnableStreamData(Stream::LEFT_RECTIFIED);
+    api->EnableStreamData(Stream::RIGHT_RECTIFIED);
+
+    api->Start(Source::VIDEO_STREAMING);
+
+    //CVPainter painter(api->GetOptionValue(Option::FRAME_RATE));
+
+    cv::namedWindow("frame");
+
+    while (true) {
+        api->WaitForStreams();
+
+        auto &&left_data = api->GetStreamData(Stream::LEFT_RECTIFIED);
+        auto &&right_data = api->GetStreamData(Stream::RIGHT_RECTIFIED);
+
+        if (!left_data.frame.empty() && !right_data.frame.empty()) {
+            cv::Mat img;
+            cv::hconcat(left_data.frame, right_data.frame, img);
+            cv::imshow("frame", img);
+        }
+
+        char key = static_cast<char>(cv::waitKey(1));
         if (key == 27 || key == 'q' || key == 'Q') {  // ESC/Q
             break;
         }
 
     }
 
-    return true;
-
+    api->Stop(Source::VIDEO_STREAMING);
 }
-void bi_cam::get_disparity() {
+void bi_cam::get_ymlfile(string intrinsics_file, string extrinsics_file, cam_paras& paras) {
 
+    FileStorage fs(intrinsics_file, FileStorage::READ);
+    if( fs.isOpened() ){
+        fs["M1"] >> paras.cameraMatrix[0];
+        fs["M2"]>> paras.cameraMatrix[1];
+        fs["D1"] >> paras.distCoeffs[0];
+        fs["D2"] >> paras.distCoeffs[1];
+
+        fs.release();
+    }
+    else
+        cout << "Error: can not save the intrinsic parameters\n";
+    fs.open(extrinsics_file, FileStorage::READ);
+    if(fs.isOpened()){
+        fs["R1"] >> paras.R[0];
+        fs["R2"] >> paras.R[1];
+        fs["P1"] >> paras.P[0];
+        fs["P2"] >> paras.P[1];
+        fs.release();
+    } else
+        cout<<"Error: can not save the intrinsic parameters\n";
 }
+void bi_cam::undistortrectiry(const Mat& left_src,const Mat& right_src, const cam_paras& paras, Mat &left_rec, Mat &right_rec){
+    Mat cameraMatrix[2], distCoeffs[2];
+    Mat R1, R2, P1, P2, Q;
+    Mat rmap[2][2];
+    cameraMatrix[0] = paras.cameraMatrix[0];
+    cameraMatrix[1] = paras.cameraMatrix[1];
+    distCoeffs[0] = paras.distCoeffs[0];
+    distCoeffs[1] = paras.distCoeffs[1];
 
-void bi_cam::handling_diparity() {
+    R1 = paras.R[0];
+    R2 = paras.R[1];
+    P1 = paras.P[0];
+    P2 = paras.P[1];
 
-}
+    Size imageSize = left_src.size();
 
-void bi_cam::get_depth() {
+    //Precompute maps for cv::remap()
+    fisheye::initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1, P1, imageSize, CV_16SC2, rmap[0][0], rmap[0][1]);
+    fisheye::initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2, P2, imageSize, CV_16SC2, rmap[1][0], rmap[1][1]);
 
-}
+    bool isVerticalStereo = fabs(P2.at<double>(1, 3)) > fabs(P2.at<double>(0, 3));
 
-void bi_cam::get_point() {
+    Mat canvas;
+    double sf;
+    int w, h;
+    if( !isVerticalStereo )
+    {
+        sf = 600./MAX(imageSize.width, imageSize.height);
+        w = cvRound(imageSize.width*sf);
+        h = cvRound(imageSize.height*sf);
+        canvas.create(h, w*2, CV_8UC3);
+    }
+    else
+    {
+        sf = 300./MAX(imageSize.width, imageSize.height);
+        w = cvRound(imageSize.width*sf);
+        h = cvRound(imageSize.height*sf);
+        canvas.create(h*2, w, CV_8UC3);
+    }
+    Mat  cimg_l;
+    remap(left_src, left_rec, rmap[0][0], rmap[0][1], INTER_LINEAR);
+    cvtColor(left_rec, cimg_l, COLOR_GRAY2BGR);
+    Mat canvasPart_l = !isVerticalStereo ? canvas(Rect(w*0, 0, w, h)) : canvas(Rect(0, h*0, w, h));
+    resize(cimg_l, canvasPart_l, canvasPart_l.size(), 0, 0, INTER_AREA);
 
+    Mat cimg_r;
+    remap(right_src, right_rec, rmap[1][0], rmap[1][1], INTER_LINEAR);
+    cvtColor(right_rec, cimg_r, COLOR_GRAY2BGR);
+    Mat canvasPart_r = !isVerticalStereo ? canvas(Rect(w*1, 0, w, h)) : canvas(Rect(0, h*1, w, h));
+    resize(cimg_r, canvasPart_r, canvasPart_r.size(), 0, 0, INTER_AREA);
+
+    imshow("rectified", canvas);
 }
