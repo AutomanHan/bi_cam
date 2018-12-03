@@ -2,6 +2,13 @@
 using namespace std;
 using namespace cv;
 MYNTEYE_USE_NAMESPACE
+
+bi_cam::bi_cam(){
+    src_img.w = 752;
+    src_img.h = 480;
+    roi_img.w = 500;
+    roi_img.h = 300;
+}
 void bi_cam::calib_single(string imglist) {
 
 }
@@ -436,33 +443,101 @@ void bi_cam::handling_diparity() {
 void bi_cam::get_depth(const Mat &dispMap, Mat &depthMap, Mat k) {
     int type = dispMap.type();
 
-    float fx = k.at<float>(0,0);
+    //float fx = k.at<float>(0,0);
+    float fx = 364.9594630859148;
     float fy = k.at<float>(1,1);
     float dx = k.at<float>(0,2);
     float dy = k.at<float>(1,2);
-    float baseline = 1;
+    float baseline = 120;
 
-    if(type == CV_8U){
+    if(type == CV_16S){
         int height = dispMap.rows;
         int width = dispMap.cols;
 
-        unsigned char* dispData = (uchar*)dispMap.data;
-        unsigned short* depthData = (ushort*)depthMap.data;
+        int count=0;
+        unsigned short* dispData = (unsigned short*)dispMap.data;
+        unsigned short* depthData = (unsigned short*)depthMap.data;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 int id = i * width + j;
                 if (!dispData[id]) continue;  //防止0除
-                depthData[id] = ushort((float) fx * baseline / ((float) dispData[id]));
+
+                depthData[id] = ((float) fx * baseline / ((float) dispData[id]));
+                //cout<<"disp is: "<<dispData[id]<<endl;
+                //cout<<"depth is: "<<depthData[id]<<endl;
+                count++;
             }
         }
+        cout<<"not zeros: "<<count<<endl;
     }
     else{
         cout<<"please confirm dispImg's type!"<<endl;
+        //cout<<dispImg.type()<<endl;
     }
 }
 
-void bi_cam::get_point() {
+void bi_cam::get_point(const Mat& depthMap, PointCloud<PointXYZ>::Ptr pc, Mat k) {
 
+    //float fx = k.at<float>(0,0);
+    float fx = 364.9594630859148;
+    //float fy = k.at<float>(1,1);
+    float fy = 366.51976298826332;
+    //float dx = k.at<float>(0,2);
+    float dx = 383.94512355037375-((src_img.w-roi_img.w)/2);
+    //float dy = k.at<float>(1,2);
+    float dy = 237.28256812409148-((src_img.h-roi_img.h)/2);
+    //float baseline = 1;
+    double camera_factor = 255;
+    int rows = depthMap.rows;
+    int cols = depthMap.cols;
+
+
+    pc->height = 1;
+    pc->width = rows*cols;
+    pc->points.resize(rows*cols);
+    pc->is_dense = true;
+
+    unsigned short* depthData =(unsigned short*)depthMap.data;
+    for(int m = 0; m<rows; m++)
+        for(int n =0; n<cols; n++){
+            int id = m*cols+n;
+            double d = depthData[id];
+            double Xw = 0, Yw = 0, Zw = 0;
+
+            Zw = d/255.0*101.0;
+            Xw = (m-dx) * Zw/fx;
+            Yw = (n-dy) * Zw/fy;
+            //cout<<"d: "<<d<<"x: "<<Xw<<" y: "<<Yw<<" x:"<<Zw<<endl;
+            //PointXYZRGB p;
+            pc->points[id].z = Zw;
+            pc->points[id].x = Xw;
+            pc->points[id].y = Yw;
+            //cout<<" "<<pc->points[id].x<<" "<<pc->points[id].y<<" "<<pc->points[id].z<<endl;
+            //pc.push_back(p);
+        }
+
+
+
+
+        //pc.height = 1;
+    //pc.width = pc.points.size();
+    //pc.is_dense = false;
+    //pcl::io::savePCDFile("./pointcloud.pcd", pc);
+
+    string filename = "./pointcloud.pcd";
+    //pcl::PCDWriter writer;
+    //writer.write(filename, *pc);
+
+    pcl::io::savePCDFileASCII(filename, *pc);
+    std::cerr<<"Saved"<<pc->points.size()<<" data points to poindt.pcd"<<endl;
+
+
+
+    //pc.points.clear();
+    //pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+    //*cloud = pc;
+    //pcl::visualization::CloudViewer viewer("cloud");
+    //viewer.showCloud(cloud);
 }
 
 
@@ -478,7 +553,7 @@ void bi_cam::manual_exposure(int gain, int brightness, int contrast){
     LOG(INFO) << "Set GAIN to " << api->GetOptionValue(Option::GAIN);
     LOG(INFO) << "Set BRIGHTNESS to " << api->GetOptionValue(Option::BRIGHTNESS);
     LOG(INFO) << "Set CONTRAST to " << api->GetOptionValue(Option::CONTRAST);
-
+    /*
     api->EnableStreamData(Stream::LEFT_RECTIFIED);
     api->EnableStreamData(Stream::RIGHT_RECTIFIED);
 
@@ -508,6 +583,7 @@ void bi_cam::manual_exposure(int gain, int brightness, int contrast){
     }
 
     api->Stop(Source::VIDEO_STREAMING);
+     */
 }
 void bi_cam::get_ymlfile(string intrinsics_file, string extrinsics_file, cam_paras& paras) {
 
@@ -571,17 +647,55 @@ void bi_cam::undistortrectiry(const Mat& left_src,const Mat& right_src, const ca
         h = cvRound(imageSize.height*sf);
         canvas.create(h*2, w, CV_8UC3);
     }
+
+    //calculate region of interest
+    Point new_lt, new_rb;
+    new_lt.x = (src_img.w-roi_img.w)/2;
+    new_rb.x = new_lt.x+roi_img.w;
+    new_lt.y = (src_img.h-roi_img.h)/2;
+    new_rb.y = new_lt.y + roi_img.h;
+
+    Mat left_rec_src, right_rec_src;
     Mat  cimg_l;
-    remap(left_src, left_rec, rmap[0][0], rmap[0][1], INTER_LINEAR);
+    remap(left_src, left_rec_src, rmap[0][0], rmap[0][1], INTER_LINEAR);
+    left_rec = left_rec_src(Rect(new_lt.x, new_lt.y, roi_img.w, roi_img.h));
+//Rect()
+    //rectangle(left_rec,new_lt, new_rb,Scalar(0,255,0));
+
     cvtColor(left_rec, cimg_l, COLOR_GRAY2BGR);
     Mat canvasPart_l = !isVerticalStereo ? canvas(Rect(w*0, 0, w, h)) : canvas(Rect(0, h*0, w, h));
     resize(cimg_l, canvasPart_l, canvasPart_l.size(), 0, 0, INTER_AREA);
 
+
     Mat cimg_r;
-    remap(right_src, right_rec, rmap[1][0], rmap[1][1], INTER_LINEAR);
+    remap(right_src, right_rec_src, rmap[1][0], rmap[1][1], INTER_LINEAR);
+    right_rec = right_rec_src(Rect(new_lt.x, new_lt.y, roi_img.w, roi_img.h));
+    //rectangle(right_rec,new_lt, new_rb,Scalar(0,255,0));
+
     cvtColor(right_rec, cimg_r, COLOR_GRAY2BGR);
     Mat canvasPart_r = !isVerticalStereo ? canvas(Rect(w*1, 0, w, h)) : canvas(Rect(0, h*1, w, h));
     resize(cimg_r, canvasPart_r, canvasPart_r.size(), 0, 0, INTER_AREA);
 
     imshow("rectified", canvas);
+}
+
+void bi_cam::show_pointclouds(string file_path){
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>); // 创建点云（指针）
+
+    if (pcl::io::loadPCDFile<pcl::PointXYZ>(file_path, *cloud) == -1) //* 读入PCD格式的文件，如果文件不存在，返回-1
+    {
+        PCL_ERROR("Couldn't read file test_pcd.pcd \n"); //文件不存在时，返回错误，终止程序。
+        return ;
+    }
+    std::cout << "Loaded "
+              << cloud->width * cloud->height
+              << " data points from test_file.pcd with the following fields: "
+              << std::endl;
+    for (size_t i = 0; i < cloud->points.size (); ++i) //显示所有的点
+        //for (size_t i = 0; i < cloud->size(); ++i) // 为了方便观察，只显示前5个点
+        std::cout << "    " << cloud->points[i].x
+                  << " " << cloud->points[i].y
+                  << " " << cloud->points[i].z << std::endl;
+    pcl::visualization::CloudViewer viewer("pcd viewer");
+    viewer.showCloud(cloud);
 }

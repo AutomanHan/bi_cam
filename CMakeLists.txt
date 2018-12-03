@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.5)
+
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG  "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELEASE  "$ENV{CXXFLAGS} -O3 -Wall")
+
 project(bi_cam)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -9,7 +14,7 @@ set(MYNTEYE_LIB /usr/local/lib/libmynteye.so)
 aux_source_directory(./ DIRSRCS)
 
 find_package(OpenCV REQUIRED)
-#find_package(PCL REQUIRED)
+find_package(PCL REQUIRED)
 
 
 #include_directories(${PCL_INCLUDE_DIRS})
@@ -21,7 +26,12 @@ find_package(OpenCV REQUIRED)
 #find_package(mynteye REQUIRED)
 include_directories(${MYNTEYE_INCLUDE_DIR})
 include_directories("./util")
+include_directories(${PCL_INCLUDE_DIRS})
+
 link_directories(${MYNTEYE_LIB_DIR})
+link_directories(${PCL_LIBRARY_DIRS})
+
+add_definitions(${PCL_DEFINITIONS})
 #link_libraries()
 
 add_executable(bi_cam ${DIRSRCS})
@@ -31,6 +41,7 @@ add_executable(bi_cam ${DIRSRCS})
 
 target_link_libraries(bi_cam ${OpenCV_LIBS})
 target_link_libraries(bi_cam ${MYNTEYE_LIB})
+target_link_libraries(bi_cam ${PCL_LIBRARIES})
 
 #target_link_libraries (bi_cam ${PCL_LIBRARIES})
 

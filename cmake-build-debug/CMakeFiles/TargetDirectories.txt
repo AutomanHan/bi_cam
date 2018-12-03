@@ -1,3 +1,0 @@
-/home/hanc/code/bi_cam/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/hanc/code/bi_cam/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/hanc/code/bi_cam/cmake-build-debug/CMakeFiles/bi_cam.dir
