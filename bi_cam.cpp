@@ -461,7 +461,6 @@ void bi_cam::get_depth(const Mat &dispMap, Mat &depthMap, Mat k) {
             for (int j = 0; j < width; j++) {
                 int id = i * width + j;
                 if (!dispData[id]) continue;  //防止0除
-
                 depthData[id] = ((float) fx * baseline / ((float) dispData[id]));
                 //cout<<"disp is: "<<dispData[id]<<endl;
                 //cout<<"depth is: "<<depthData[id]<<endl;
@@ -515,9 +514,6 @@ void bi_cam::get_point(const Mat& depthMap, PointCloud<PointXYZ>::Ptr pc, Mat k)
             //cout<<" "<<pc->points[id].x<<" "<<pc->points[id].y<<" "<<pc->points[id].z<<endl;
             //pc.push_back(p);
         }
-
-
-
 
         //pc.height = 1;
     //pc.width = pc.points.size();
