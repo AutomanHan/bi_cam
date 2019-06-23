@@ -20,6 +20,24 @@ int pc_process::get_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,std::st
     return 0;
 }
 
+int pc_process::get_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::string pc_path) {
+    if(pc_path.empty() || cloud==NULL){
+        return -1;
+        std::cout<<"cloud is empty or path is wrong"<<std::endl;
+    }
+    pcl::PolygonMesh mesh;
+    //pcl::io::loadPolygonFileSTL(pc_path, mesh);
+    pcl::io::loadPolygonFileOBJ(pc_path, mesh);
+    pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+    if(cloud->points.size() == 0){
+        std::cout<<"no file is loaded"<<std::endl;
+    }
+    else{
+        std::cout<<"size of stl is: "<<cloud->points.size()<<std::endl;
+    }
+    return 0;
+}
+
 //preprocess point cloud
 int pc_process::preprocess_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src,
                                       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filter) {
@@ -173,6 +191,30 @@ int pc_process::ec_object(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src,
     return 0;
 }
 
+//extract object
+int pc_process::extract_object(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_object){
+    std::vector<pcl::PointCloud<pcl::PointXYZ> > vec;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_extractor(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_passthrough(new pcl::PointCloud<pcl::PointXYZ>);
+    Eigen::VectorXf plane_coefficient;
+    seg_plane(cloud_src, cloud_extractor,cloud_plane);
+
+    get_planemodel(cloud_plane, plane_coefficient);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f(new pcl::PointCloud<pcl::PointXYZ>);
+    Passthrough_pointcloud(cloud_extractor, cloud_f, plane_coefficient);
+
+
+    //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_object(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointXYZ center;
+    MassCenter_pointcloud(cloud_f, center);
+    ec_object(cloud_f, vec);
+    extract_object(vec, center, cloud_object);
+    return 0;
+}
+
+
 //icp registration
 int pc_process::icp_registration(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in,
                                  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target, Eigen::Matrix4d &trans_matrix) {
@@ -220,7 +262,7 @@ int pc_process::save_pointcloud1(pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud
     pcl::PCDWriter writer;
 
         std::stringstream ss;
-        ss<<"/home/hanc/code/bi_cam/save_data/cloud_cluster_gongjian.pcd";
+        ss<<"/home/hanc/code/bi_cam/data_src/gongjian_catch.pcd";
         std::cout<< ss.str() <<std::endl;
 
         writer.write(ss.str(), *point_cloud, false);
@@ -314,6 +356,51 @@ int pc_process::Passthrough_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud
         }
     }
     return 0;
+}
+
+
+//passthrough filter for plannar normal
+int pc_process::Passthrough_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src,
+                                       const Eigen::VectorXf &model_coefficients) {
+    if(cloud_src == NULL) return -1;
+
+    float A, B, C, D;
+    A = model_coefficients[0];
+    B = model_coefficients[1];
+    C = model_coefficients[2];
+    D = model_coefficients[3];
+    float div_ABC = sqrt(pow(A,2) + pow(B,2) + pow(C,2));
+    if(div_ABC == 0){
+        std::cerr<<"div_ABC is negtivate"<<std::endl;
+        return -1;
+    }
+
+    pcl::PointCloud<pcl::PointXYZ>::iterator it = cloud_src->begin();
+    for(; it!=cloud_src->end(); ){
+        float x, y, z;
+        x = it->x;
+        y = it->y;
+        z = it->z;
+        //x = cloud_src->points[i].x;
+        //y = cloud_src->points[i].y;
+        //z = cloud_src->points[i].z;
+        float mul = abs(A*x + B*y + C*z + D);
+        float dis = mul / div_ABC;
+        if(dis > 2){
+            if(dis < 25){
+                float temp = (A*x+B*y+C*z+D)/(pow(A,2)+pow(B,2)+pow(C,2));
+                it->x = x - A*temp;
+                it->y = y - B*temp;
+                it->z = z - C*temp;
+                it++;
+            }
+            else
+                it = cloud_src->erase(it);
+        }
+        else{
+            it++;
+        }
+    }
 }
 
 //mass center for after filter
@@ -572,8 +659,21 @@ int pc_process::Point_Normal2PointCloud(std::vector<Point_Normal> &vec_pn,
         //std::cout<<"type is: "<<vec_pn[i].type<<std::endl;
         point_cloud[vec_pn[i].type]->points.push_back(vec_pn[i].point_xyz);
     }
-
     return 0;
+}
+
+//filter each plannar(totally 3 plannars)
+int pc_process::Filter_Plannar(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &vec_pointcloud) {
+    if(vec_pointcloud.empty()) return -1;
+    int nums = vec_pointcloud.size();
+    for(int i=0; i<nums; i++){
+        pcl::PointCloud<pcl::PointXYZ>::Ptr pc = vec_pointcloud[i];
+        Eigen::VectorXf model_coefficients;
+
+        get_planemodel(pc, model_coefficients);
+
+        Passthrough_pointcloud(pc, model_coefficients);
+    }
 }
 
 //calculate distance between two points

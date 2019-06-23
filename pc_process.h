@@ -11,35 +11,8 @@
 #include <math.h>
 #include <cstdlib>
 
+#include "pcl-h.h"
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/ply_io.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/registration/icp.h>
-#include <pcl/surface/mls.h>
-#include <pcl/filters/passthrough.h>
-//#include <pcl/filters/>
-
-#include <pcl/sample_consensus/method_types.h>
-#include <pcl/sample_consensus/model_types.h>
-#include <pcl/sample_consensus/ransac.h>
-#include <pcl/sample_consensus/sac_model_normal_plane.h>
-
-
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/segmentation/extract_clusters.h>
-#include <pcl/segmentation/region_growing.h>
-#include <pcl/ModelCoefficients.h>
-//#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/cloud_viewer.h>
-
-#include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
-
-#include <pcl/features/normal_3d.h>
 
 //#include <boost/shared_ptr.hpp>
 
@@ -56,6 +29,7 @@ class pc_process{
 public:
     //get point cloud from disk
     int get_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,std::string pc_path, std::string ext);
+    int get_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,std::string pc_path);
 
     //preprocess point cloud(such filter)
     int preprocess_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filter);
@@ -69,6 +43,9 @@ public:
     //select center object
     int extract_object(const std::vector<pcl::PointCloud<pcl::PointXYZ> > &vec,
             const pcl::PointXYZ& mass_center ,pcl::PointCloud<pcl::PointXYZ>::Ptr object_pc);
+
+    //extract object
+    int extract_object(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_object);
 
     //icp registration
     int icp_registration(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target, Eigen::Matrix4d &trans_matrix);
@@ -86,6 +63,9 @@ public:
     //passthrough filter for plannar normal
     int Passthrough_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src,
             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filter, const Eigen::VectorXf& model_coefficients);
+
+    //passthrough filter for plannar normal
+    int Passthrough_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src, const Eigen::VectorXf& model_coefficients);
 
     //mass center for after filter
     int MassCenter_pointcloud(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_src, pcl::PointXYZ& mass_center);
@@ -107,6 +87,9 @@ public:
             std::vector<Point_Normal> &pn);
     //convert struct PointNormal to pointcloud+normals
     int Point_Normal2PointCloud(std::vector<Point_Normal>& vec_pn, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &point_cloud);
+
+    //filter each plannar(totally 3 plannars)
+    int Filter_Plannar(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &vec_pointcloud);
 
 public:
     //calculate distance between two points

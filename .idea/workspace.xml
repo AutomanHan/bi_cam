@@ -12,11 +12,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9f34faba-5a94-477f-870d-bd205bdf0c02" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/pc_process.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pc_process.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bi_cam.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/bi_cam.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pc_process.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/pc_process.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pc_process.h" beforeDir="false" afterPath="$PROJECT_DIR$/pc_process.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_0.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_1.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_2.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_3.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_4.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_5.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_6.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_7.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_8.pcd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/save_data/cloud_cluster_gongjian.pcd" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,35 +39,37 @@
     <session id="-1158697013">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="32" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.1" value="2" />
-          <entry key="project.open.time.2" value="1" />
+          <entry key="project.closed" value="47" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.open.time.1" value="4" />
+          <entry key="project.open.time.2" value="2" />
           <entry key="project.open.time.25" value="3" />
           <entry key="project.open.time.26" value="1" />
           <entry key="project.open.time.28" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.30" value="1" />
-          <entry key="project.open.time.31" value="4" />
-          <entry key="project.open.time.33" value="1" />
-          <entry key="project.open.time.34" value="1" />
+          <entry key="project.open.time.31" value="6" />
+          <entry key="project.open.time.32" value="2" />
+          <entry key="project.open.time.33" value="2" />
+          <entry key="project.open.time.34" value="2" />
           <entry key="project.open.time.35" value="2" />
           <entry key="project.open.time.36" value="2" />
           <entry key="project.open.time.38" value="1" />
-          <entry key="project.open.time.39" value="1" />
+          <entry key="project.open.time.39" value="2" />
           <entry key="project.open.time.4" value="3" />
+          <entry key="project.open.time.41" value="1" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.52" value="1" />
           <entry key="project.open.time.6" value="2" />
-          <entry key="project.open.time.7" value="3" />
-          <entry key="project.opened" value="33" />
+          <entry key="project.open.time.7" value="6" />
+          <entry key="project.opened" value="48" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="cc" value="4" />
-          <entry key="cpp" value="28039" />
-          <entry key="h" value="5879" />
+          <entry key="cpp" value="30558" />
+          <entry key="h" value="6579" />
           <entry key="txt" value="687" />
           <entry key="xml" value="43" />
         </counts>
@@ -66,7 +77,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="687" />
-          <entry key="ObjectiveC" value="33922" />
+          <entry key="ObjectiveC" value="37141" />
           <entry key="XML" value="43" />
         </counts>
       </usages-collector>
@@ -75,9 +86,10 @@
           <entry key="Makefile" value="1" />
           <entry key="bi_cam (disassembly)" value="15" />
           <entry key="cc" value="1" />
-          <entry key="cpp" value="9" />
-          <entry key="h" value="8" />
+          <entry key="cpp" value="12" />
+          <entry key="h" value="13" />
           <entry key="hpp" value="2" />
+          <entry key="md" value="2" />
           <entry key="pcd" value="8" />
           <entry key="xml" value="4" />
           <entry key="yml" value="7" />
@@ -86,8 +98,8 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Disassembly" value="15" />
-          <entry key="ObjectiveC" value="19" />
-          <entry key="PLAIN_TEXT" value="9" />
+          <entry key="ObjectiveC" value="27" />
+          <entry key="PLAIN_TEXT" value="11" />
           <entry key="Scratch" value="1" />
           <entry key="XML" value="4" />
           <entry key="YAML" value="7" />
@@ -100,29 +112,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
-              <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pc_process.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="480" column="30" selection-start-line="480" selection-start-column="30" selection-end-line="480" selection-end-column="30" />
-              <folding>
-                <element signature="e#38#61#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file:///usr/local/include/pcl-1.8/pcl/features/feature.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3781">
-              <caret line="199" column="6" selection-start-line="199" selection-start-column="6" selection-end-line="199" selection-end-column="6" />
+            <state relative-caret-position="247">
+              <caret line="13" column="32" selection-start-line="13" selection-start-column="32" selection-end-line="13" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -130,11 +121,23 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pc_process.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-969">
-              <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+            <state relative-caret-position="1444">
+              <caret line="76" selection-start-line="76" selection-end-line="76" />
               <folding>
-                <element signature="e#525#571#0" expanded="true" />
-                <element signature="e#940#983#0" expanded="true" />
+                <element signature="e#90#107#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pcl-h.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="152">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
+              <folding>
+                <element signature="e#471#517#0" expanded="true" />
+                <element signature="e#886#929#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -143,8 +146,35 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="231" column="92" selection-start-line="231" selection-start-column="6" selection-end-line="231" selection-end-column="92" />
+            <state relative-caret-position="931">
+              <caret line="96" column="14" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pc_process.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4999">
+              <caret line="362" column="16" selection-start-line="362" selection-start-column="16" selection-end-line="362" selection-end-column="16" />
+              <folding>
+                <element signature="e#38#61#0" expanded="true" />
+                <element signature="e#1571#1868#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/bi_cam.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1064">
+              <caret line="71" selection-start-line="71" selection-end-line="71" />
+              <folding>
+                <element signature="e#453#474#0" expanded="true" />
+                <element signature="e#520#537#0" expanded="true" />
+                <element signature="e#673#709#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -167,6 +197,11 @@
       <find>viewerOneOff</find>
       <find>dist is:</find>
       <find>cloud that belong to the first cluster</find>
+      <find>3</find>
+      <find>cloud_color</find>
+      <find>center</find>
+      <find>collect_images</find>
+      <find>calib_bino</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -180,9 +215,14 @@
         <option value="$PROJECT_DIR$/bi_cam.h" />
         <option value="$PROJECT_DIR$/bi_cam.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/pc_process.h" />
-        <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/../pcl_learn/chap13_registration/3_normal_distributions_transform/source/normal_distributions_transform.cpp" />
         <option value="$PROJECT_DIR$/pc_process.cpp" />
+        <option value="$PROJECT_DIR$/pch_h.h" />
+        <option value="$PROJECT_DIR$/pcl-h.h" />
+        <option value="$PROJECT_DIR$/pc_process.h" />
+        <option value="$PROJECT_DIR$/vis_pcl.cpp" />
+        <option value="$PROJECT_DIR$/vis_pcl.h" />
+        <option value="$PROJECT_DIR$/main.cpp" />
       </list>
     </option>
   </component>
@@ -194,9 +234,9 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="4">
-    <option name="x" value="139" />
+    <option name="x" value="75" />
     <option name="y" value="24" />
-    <option name="width" value="1253" />
+    <option name="width" value="1416" />
     <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -205,7 +245,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -218,10 +257,16 @@
               <item name="bi_cam" type="462c0819:PsiDirectoryNode" />
               <item name="cam_params" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="bi_cam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bi_cam" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -300,12 +345,27 @@
       <workItem from="1548210486793" duration="12849000" />
       <workItem from="1548294899834" duration="18671000" />
       <workItem from="1548675810655" duration="6026000" />
-      <workItem from="1548835124507" duration="10441000" />
+      <workItem from="1548835124507" duration="11282000" />
+      <workItem from="1550029172340" duration="3681000" />
+      <workItem from="1550149446532" duration="16541000" />
+      <workItem from="1550577818328" duration="823000" />
+      <workItem from="1551006935762" duration="5162000" />
+      <workItem from="1555037854951" duration="9617000" />
+      <workItem from="1555331113580" duration="42000" />
+      <workItem from="1555331191556" duration="10383000" />
+      <workItem from="1556154157295" duration="2471000" />
+      <workItem from="1556368878475" duration="4957000" />
+      <workItem from="1557047322792" duration="2753000" />
+      <workItem from="1557210113608" duration="7792000" />
+      <workItem from="1560433067634" duration="689000" />
+      <workItem from="1560656216935" duration="1574000" />
+      <workItem from="1561272749483" duration="1859000" />
+      <workItem from="1561274688941" duration="127000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="239773000" />
+    <option name="totallyTimeSpent" value="309085000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -317,10 +377,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="139" y="24" width="1253" height="1056" extended-state="4" />
-    <editor active="true" />
+    <frame x="75" y="24" width="1416" height="1056" extended-state="4" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.08119304" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15474452" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -331,8 +390,8 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3294979" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.24" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.21443966" />
+      <window_info active="true" anchor="bottom" id="Messages" order="8" visible="true" weight="0.19888888" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.18514644" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="CMake" order="12" weight="0.12444445" />
@@ -363,8 +422,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/pc_process.cpp</url>
-          <line>268</line>
-          <option name="timeStamp" value="6" />
+          <line>222</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/main.cpp</url>
+          <line>225</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -430,20 +494,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bi_cam.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="10" column="14" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bi_cam.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10032">
-          <caret line="528" selection-start-line="528" selection-end-line="528" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/include/pcl-1.8/pcl/impl/point_types.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="309">
@@ -451,44 +501,91 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <entry file="file:///usr/local/include/pcl-1.8/pcl/features/feature.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="34" column="17" selection-start-line="34" selection-start-column="17" selection-end-line="34" selection-end-column="17" />
+        <state relative-caret-position="667">
+          <caret line="199" column="6" selection-start-line="199" selection-start-column="6" selection-end-line="199" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/include/pcl-1.8/pcl/features/feature.h">
+    <entry file="file://$PROJECT_DIR$/../pcl_learn/chap13_registration/3_normal_distributions_transform/source/normal_distributions_transform.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3781">
-          <caret line="199" column="6" selection-start-line="199" selection-start-column="6" selection-end-line="199" selection-end-column="6" />
+        <state relative-caret-position="418">
+          <caret line="22" column="19" selection-start-line="22" selection-start-column="19" selection-end-line="22" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pch_h.h" />
+    <entry file="file://$PROJECT_DIR$/vis_pcl.cpp" />
+    <entry file="file://$PROJECT_DIR$/vis_pcl.h" />
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bi_cam.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="435" column="9" selection-start-line="435" selection-start-column="9" selection-end-line="435" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="13" column="32" selection-start-line="13" selection-start-column="32" selection-end-line="13" selection-end-column="32" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="231" column="92" selection-start-line="231" selection-start-column="6" selection-end-line="231" selection-end-column="92" />
+        <state relative-caret-position="931">
+          <caret line="96" column="14" selection-start-line="96" selection-start-column="14" selection-end-line="96" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pcl-h.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+          <folding>
+            <element signature="e#471#517#0" expanded="true" />
+            <element signature="e#886#929#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pc_process.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-969">
-          <caret line="21" column="14" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+        <state relative-caret-position="1444">
+          <caret line="76" selection-start-line="76" selection-end-line="76" />
           <folding>
-            <element signature="e#525#571#0" expanded="true" />
-            <element signature="e#940#983#0" expanded="true" />
+            <element signature="e#90#107#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pc_process.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="480" column="30" selection-start-line="480" selection-start-column="30" selection-end-line="480" selection-end-column="30" />
+        <state relative-caret-position="4999">
+          <caret line="362" column="16" selection-start-line="362" selection-start-column="16" selection-end-line="362" selection-end-column="16" />
           <folding>
             <element signature="e#38#61#0" expanded="true" />
+            <element signature="e#1571#1868#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bi_cam.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1064">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
+          <folding>
+            <element signature="e#453#474#0" expanded="true" />
+            <element signature="e#520#537#0" expanded="true" />
+            <element signature="e#673#709#0" expanded="true" />
           </folding>
         </state>
       </provider>
